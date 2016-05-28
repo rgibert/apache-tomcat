@@ -1,10 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Server port="__SHUTDOWN_PORT__" shutdown="SHUTDOWN">
+  <Listener className="org.apache.catalina.startup.VersionLoggerListener" />
   <Listener className="org.apache.catalina.core.AprLifecycleListener" SSLEngine="on" />
   <Listener className="org.apache.catalina.core.JasperListener" />
   <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener" />
-  <Listener className="org.apache.catalina.mbeans.ServerLifecycleListener" />
   <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener" />
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener" />
   <GlobalNamingResources>
     <Resource name="UserDatabase" auth="Container"
               type="org.apache.catalina.UserDatabase"
@@ -13,8 +14,8 @@
               pathname="conf/tomcat-users.xml" />
   </GlobalNamingResources>
   <Service name="Catalina">
-    <Connector port="__HTTP_PORT__" protocol="HTTP/1.1" 
-               connectionTimeout="20000" 
+    <Connector port="__HTTP_PORT__" protocol="HTTP/1.1"
+               connectionTimeout="20000"
                redirectPort="__HTTPS_PORT__" />
 <!-- REMOVE TO ENABLE HTTPS
     <Connector port="__HTTPS_PORT__" protocol="HTTP/1.1" SSLEnabled="true"
@@ -28,13 +29,14 @@
                clientAuth="false" sslProtocol="TLS" />
 REMOVE TO ENABLE HTTPS -->
     <Connector port="__AJP_PORT__" protocol="AJP/1.3" redirectPort="__HTTPS_PORT__" />
-    <Engine name="Catalina" defaultHost="localhost" jvmRoute="__JVM_ROUTE__">         
-      <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
-             resourceName="UserDatabase"/>
+    <Engine name="Catalina" defaultHost="localhost" jvmRoute="__JVM_ROUTE__">
+      <Realm className="org.apache.catalina.realm.LockOutRealm">
+        <Realm className="org.apache.catalina.realm.UserDatabaseRealm"
+               resourceName="UserDatabase"/>
+      </Realm>
       <Host name="localhost"  appBase="webapps"
-            unpackWARs="true" autoDeploy="true"
-            xmlValidation="false" xmlNamespaceAware="false">
-        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"  
+            unpackWARs="true" autoDeploy="true">
+        <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs"
                prefix="access." suffix=".log" pattern="common" resolveHosts="false"
                fileDateFormat="yyyy-MM-dd"/>
       </Host>
